@@ -11,7 +11,7 @@ public class Player : MonoBehaviour
 
     void Start()
     {
-        _velocidade = 3f;
+        _velocidade = 4f;
         _forcaPulo = 10f;
         _podePular = true;
         _rigidbody2D = GetComponent<Rigidbody2D>();
@@ -26,18 +26,15 @@ public class Player : MonoBehaviour
 
     void Movimentar()
     {
-        if (!_podePular)
-            return;
-
         var direcao = Input.GetAxis("Horizontal");
 
         _rigidbody2D.velocity = new Vector2(_velocidade * direcao, _rigidbody2D.velocity.y);
 
         switch (direcao)
         {
-            case 0: DefinirAnimacao(EPlayerTransicao.PARADO); break;
-            case 1: DefinirMovimentacao(direcao, 0); break;
-            case -1: DefinirMovimentacao(direcao, 180); break;
+            case 0: if (_podePular) DefinirAnimacao(EPlayerTransicao.PARADO); break;
+            case 1: DefinirMovimentacao(0); break;
+            case -1: DefinirMovimentacao(180); break;
         }
     }
 
@@ -51,10 +48,12 @@ public class Player : MonoBehaviour
         _podePular = false;
     }
 
-    private void DefinirMovimentacao(float direcao, float angulo)
+    private void DefinirMovimentacao(float angulo)
     {
         transform.eulerAngles = new Vector2(0f, angulo);
-        DefinirAnimacao(EPlayerTransicao.ANDANDO);
+
+        if (_podePular)
+            DefinirAnimacao(EPlayerTransicao.ANDANDO);
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
