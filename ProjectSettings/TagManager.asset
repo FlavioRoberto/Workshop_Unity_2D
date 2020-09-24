@@ -5,6 +5,9 @@ TagManager:
   serializedVersion: 2
   tags:
   - Chao
+  - Enemy
+  - EnemyHead
+  - EnemyBody
   layers:
   - Default
   - TransparentFX
