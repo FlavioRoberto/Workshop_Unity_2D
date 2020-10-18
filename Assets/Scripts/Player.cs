@@ -7,15 +7,17 @@ public class Player : MonoBehaviour
 {
     private float _velocidade;
     private float _forcaPulo;
-    private Rigidbody2D _rigidbody2D;
-    private Animator _animator;
     private bool _podePular;
     private bool _sofrendoDano;
-    private GameObject _gameObjectInimigo;
     private float _tempoEmDano;
+    private float _vida;
+    private Rigidbody2D _rigidbody2D;
+    private Animator _animator;
+    private GameObject _gameObjectInimigo;
 
     void Start()
     {
+        _vida = 1;
         _velocidade = 4f;
         _forcaPulo = 10f;
         _podePular = true;
@@ -84,6 +86,8 @@ public class Player : MonoBehaviour
 
         if (collision.gameObject.CompareTag("EnemyBody"))
         {
+            DiminuirVida();
+
             _sofrendoDano = true;
 
             DefinirAnimacao(EPlayerTransicao.DANO);
@@ -94,17 +98,33 @@ public class Player : MonoBehaviour
         }
     }
 
+    private void DiminuirVida()
+    {
+        if (_sofrendoDano)
+            return;
+
+        _vida -= _vida * 0.25f;
+
+        var barraVida = FindObjectOfType<BarraVida>();
+
+        barraVida.DefinirVida((EStatusVida)_vida);
+
+        var barraVida2 = FindObjectOfType<BarraVida2>();
+
+        barraVida2.Vida = _vida;
+    }
+
     private void SofrendoDano()
     {
         if (!_sofrendoDano)
             return;
 
+        _gameObjectInimigo.HabilitarColisoresFilhos();
+
         _tempoEmDano += Time.deltaTime;
-
-        if (_tempoEmDano > 1)
+                
+        if (_tempoEmDano > 2)
         {
-            _gameObjectInimigo.HabilitarColisoresFilhos();
-
             _sofrendoDano = false;
 
             _tempoEmDano = 0;
